@@ -3,9 +3,15 @@
 ## TODO
 
 ### T9 — Deployment ke Vercel + Neon
-Konfigurasi env var (`DATABASE_URL`), `vercel.json` bila perlu, pastikan build production sukses, deploy, verifikasi end-to-end di URL production (termasuk `/raw/{slug}`).
+Konfigurasi env var (`DATABASE_URL`), pastikan build production sukses, deploy, verifikasi end-to-end di URL production (termasuk `/raw/{slug}`).
 **Kriteria sukses**: aplikasi live di Vercel, create/view/edit/raw paste berfungsi di production.
 **Depends on**: T2–T8
+**Status**: repo siap deploy (build production lokal sukses), tapi step import project & set env var di dashboard Vercel butuh aksi manual user (tidak ada akses Vercel CLI/login di sesi ini).
+
+### T10 — Rate limiting endpoint create/update (opsional, deferred)
+Ditemukan saat VAPT (lihat `findings.md` V3, severity Medium): tidak ada rate limit di `POST /api/pastes` dan `PUT /api/pastes/[slug]`. Tambahkan sebelum trafik publik signifikan.
+**Kriteria sukses**: request beruntun dari IP/klien yang sama dibatasi (mis. HTTP 429 setelah N request per menit).
+**Depends on**: T3, T5
 
 ## DOING
 - (kosong)

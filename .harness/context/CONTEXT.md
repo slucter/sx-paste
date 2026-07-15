@@ -19,6 +19,9 @@ Web tool sederhana untuk paste/save teks (seperti pastebin). User paste teks →
 - URL paste **tidak berubah** saat diedit ulang — slug dibuat sekali di awal, update hanya mengubah konten.
 - Mode raw diakses lewat route terpisah, mengembalikan `Content-Type: text/plain` agar mudah dibaca `wget`/`curl` tanpa parsing HTML.
 - Landing page: 1 section minimalis (judul + deskripsi + CTA), tanpa gradient, compact tapi tetap menarik.
+- Tabel DB pakai prefix **`sxpaste_`** (mis. `sxpaste_pastes`) karena Neon instance yang sama dipakai lintas project lain milik user.
+- Repo GitHub: **https://github.com/slucter/sx-paste**, branch utama `main`. User minta harness melakukan auto-commit & push langsung (sudah diizinkan eksplisit).
+- Tidak ada tool browser interaktif di sesi harness ini — verifikasi UI dilakukan lewat SSR HTML check, type-check, lint, dan production build, bukan klik manual. User perlu cek visual sendiri sebelum deploy final.
 
 ## Glosarium
 - **slug**: random string unik di URL (`domain/{slug}`) sebagai identitas paste.
