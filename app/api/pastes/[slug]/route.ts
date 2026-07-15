@@ -2,7 +2,9 @@ import { NextRequest, NextResponse } from "next/server";
 import { eq } from "drizzle-orm";
 import { db } from "@/lib/db";
 import { pastes } from "@/lib/db/schema";
-import { MAX_CONTENT_LENGTH } from "@/lib/constants";
+import { MAX_CONTENT_LENGTH, UPDATE_RATE_LIMIT } from "@/lib/constants";
+import { rejectIfTooLarge, tooManyRequests } from "@/lib/request-guard";
+import { checkRateLimit, getClientIp } from "@/lib/rate-limit";
 
 export async function GET(
   _req: NextRequest,
@@ -28,6 +30,19 @@ export async function PUT(
   { params }: { params: Promise<{ slug: string }> }
 ) {
   const { slug } = await params;
+
+  const tooLarge = rejectIfTooLarge(req);
+  if (tooLarge) return tooLarge;
+
+  const ip = getClientIp(req);
+  const rateLimit = await checkRateLimit(
+    `update:${ip}`,
+    UPDATE_RATE_LIMIT.limit,
+    UPDATE_RATE_LIMIT.windowSeconds
+  );
+  if (!rateLimit.allowed) {
+    return tooManyRequests(rateLimit.retryAfterSeconds);
+  }
 
   let body: unknown;
   try {

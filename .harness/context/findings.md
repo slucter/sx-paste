@@ -20,9 +20,9 @@ Konten paste dirender lewat CodeMirror (text buffer) dan JSX biasa — tidak ada
 ### V3 — Tidak ada rate limiting pada endpoint create/update
 **Lokasi**: `app/api/pastes/route.ts` (POST), `app/api/pastes/[slug]/route.ts` (PUT)
 **Severity**: Medium
-**Status**: open
-Tanpa rate limit, siapa pun bisa membuat paste dalam jumlah tak terbatas (spam/flood) atau brute-force mencoba banyak `editToken` pada satu slug (meski token 32 karakter dari alphabet 57 karakter → ruang kemungkinan sangat besar, brute force praktis tidak feasible, tapi flood create tetap mungkin membebani Neon/biaya).
-**Rekomendasi**: tambahkan rate limiting sederhana (mis. berbasis IP, pakai Vercel Edge Middleware atau layanan seperti Upstash Ratelimit) sebelum trafik publik signifikan. Tidak blocking untuk MVP/personal use.
+**Status**: **fixed** (lihat T10 di `backlog.md`)
+Ditambahkan rate limiter atomic berbasis Postgres (`lib/rate-limit.ts`): 5 create/menit dan 20 update/menit per IP, fixed-window via single upsert SQL (race-safe). Ditambah guard `Content-Length` (`lib/request-guard.ts`) yang menolak body >~2MB sebelum di-parse ke memori (413), menutup potensi memory-based payload DoS. Diverifikasi manual: request ke-6 dalam 1 menit dapat 429 + `Retry-After`, payload 2MB dapat 413.
+**Catatan residual**: identifikasi klien masih berbasis header `X-Forwarded-For` (bisa dispoof jika app tidak di belakang proxy tepercaya seperti Vercel — di Vercel header ini di-set oleh platform dan aman diandalkan). Tidak ada CAPTCHA/challenge (mis. Cloudflare Turnstile) — cukup untuk skala saat ini, bisa ditambah kalau spam masih lolos rate limit di masa depan.
 
 ### V4 — Tidak ada mekanisme recovery jika localStorage hilang
 **Lokasi**: `lib/storage.ts`, alur edit token

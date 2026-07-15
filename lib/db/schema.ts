@@ -1,4 +1,4 @@
-import { pgTable, text, timestamp } from "drizzle-orm/pg-core";
+import { pgTable, text, timestamp, integer } from "drizzle-orm/pg-core";
 
 export const pastes = pgTable("sxpaste_pastes", {
   slug: text("slug").primaryKey(),
@@ -10,3 +10,10 @@ export const pastes = pgTable("sxpaste_pastes", {
 
 export type Paste = typeof pastes.$inferSelect;
 export type NewPaste = typeof pastes.$inferInsert;
+
+// Fixed-window rate limiter, keyed by "<scope>:<identifier>" (e.g. "create:1.2.3.4").
+export const rateLimits = pgTable("sxpaste_rate_limits", {
+  key: text("key").primaryKey(),
+  windowStart: timestamp("window_start", { withTimezone: true }).notNull().defaultNow(),
+  count: integer("count").notNull().default(1),
+});

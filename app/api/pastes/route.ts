@@ -2,9 +2,24 @@ import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { pastes } from "@/lib/db/schema";
 import { generateSlug, generateEditToken } from "@/lib/slug";
-import { MAX_CONTENT_LENGTH } from "@/lib/constants";
+import { MAX_CONTENT_LENGTH, CREATE_RATE_LIMIT } from "@/lib/constants";
+import { rejectIfTooLarge, tooManyRequests } from "@/lib/request-guard";
+import { checkRateLimit, getClientIp } from "@/lib/rate-limit";
 
 export async function POST(req: NextRequest) {
+  const tooLarge = rejectIfTooLarge(req);
+  if (tooLarge) return tooLarge;
+
+  const ip = getClientIp(req);
+  const rateLimit = await checkRateLimit(
+    `create:${ip}`,
+    CREATE_RATE_LIMIT.limit,
+    CREATE_RATE_LIMIT.windowSeconds
+  );
+  if (!rateLimit.allowed) {
+    return tooManyRequests(rateLimit.retryAfterSeconds);
+  }
+
   let body: unknown;
   try {
     body = await req.json();
