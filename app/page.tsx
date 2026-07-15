@@ -33,12 +33,6 @@ export default function Home() {
             curl domain/raw/&#123;id&#125;
           </span>
         </div>
-
-        <ul className="mt-10 space-y-2 border-t border-border pt-6 text-sm text-muted">
-          <li>· Link acak, singkat, siap dibagikan</li>
-          <li>· Bisa diedit kembali dari browser yang sama</li>
-          <li>· Mode raw untuk CLI, mode baca untuk manusia</li>
-        </ul>
       </section>
     </main>
   );
