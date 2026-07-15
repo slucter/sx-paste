@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import { SITE_URL, SITE_NAME, SITE_DESCRIPTION } from "@/lib/site";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -13,8 +14,44 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "sx paste",
-  description: "Paste, save, and share text instantly. Raw mode built in for wget/curl.",
+  metadataBase: new URL(SITE_URL),
+  title: {
+    default: `${SITE_NAME} — paste, save, share teks instan`,
+    template: `%s — ${SITE_NAME}`,
+  },
+  description: SITE_DESCRIPTION,
+  keywords: [
+    "pastebin",
+    "paste teks online",
+    "share teks",
+    "text sharing",
+    "raw text tool",
+    "wget curl paste",
+    "sx paste",
+  ],
+  applicationName: SITE_NAME,
+  authors: [{ name: SITE_NAME }],
+  creator: SITE_NAME,
+  alternates: {
+    canonical: "/",
+  },
+  openGraph: {
+    type: "website",
+    url: SITE_URL,
+    siteName: SITE_NAME,
+    title: `${SITE_NAME} — paste, save, share teks instan`,
+    description: SITE_DESCRIPTION,
+    locale: "id_ID",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: `${SITE_NAME} — paste, save, share teks instan`,
+    description: SITE_DESCRIPTION,
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
 };
 
 export default function RootLayout({
